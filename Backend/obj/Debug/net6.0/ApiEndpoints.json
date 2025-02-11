@@ -1,0 +1,180 @@
+[
+  {
+    "ContainingType": "WebApi.Controllers.OcorenciaController",
+    "Method": "SaveOcorrencia",
+    "RelativePath": "api/Ocorencia",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "Latitude",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Longitude",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Descricao",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Classificar",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "UtilizadorId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "File",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.OcorenciaController",
+    "Method": "OcorrenciaPorId",
+    "RelativePath": "api/Ocorencia/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.OcorenciaController",
+    "Method": "ListarTodosOcorrencia",
+    "RelativePath": "api/Ocorencia/list",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.OcorenciaController",
+    "Method": "ListarOcorrencia",
+    "RelativePath": "api/Ocorencia/list/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.OcorenciaController",
+    "Method": "PartilharOcorrencia",
+    "RelativePath": "api/Ocorencia/partilha",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "partilharOcorrenciaDTO",
+        "Type": "WebApi.DTOs.PartilharOcorrenciaDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.UtilizadorController",
+    "Method": "SaveProduct",
+    "RelativePath": "api/Utilizador",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "utilizador",
+        "Type": "WebApi.Domain.Utilizador",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.UtilizadorController",
+    "Method": "GetUtilizadorPorId",
+    "RelativePath": "api/Utilizador/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.UtilizadorController",
+    "Method": "GetUtilizadores",
+    "RelativePath": "api/Utilizador/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.UtilizadorController",
+    "Method": "Login",
+    "RelativePath": "api/Utilizador/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "login",
+        "Type": "WebApi.DTOs.LoginDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebApi.Controllers.UtilizadorController",
+    "Method": "GetUtilizadoresPorId",
+    "RelativePath": "api/Utilizador/usersById",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
