@@ -6,20 +6,33 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'baseUrl.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:flutter/services.dart'; // Para carregar arquivos dos assets
 import 'package:path_provider/path_provider.dart';
-import 'baseUrl.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 //Conectividade
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 
 String _selectedValue = 'Urgente';
 String _selectedUser = '';
 String userI = '', ocorrenciaId = '';
+final Map<dynamic, dynamic> ocorrencia1 = Map<dynamic, dynamic>();
+bool _connectado = false;
+/*void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicialize o Hive com um caminho de armazenamento
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDir.path);
+
+  // Abra a caixa (Box)
+  await Hive.openBox('partilha');
+
+  runApp(DetalhesOcorrencia(
+    userI: userI,
+    ocorrencia: ocorrencia1,
+  ));
+}*/
 
 class DetalhesOcorrencia extends StatefulWidget {
   String userI;
@@ -40,39 +53,188 @@ class _DetalhesOcorrenciaState extends State<DetalhesOcorrencia> {
       Completer<GoogleMapController>();
   String? usuarioSelecionado;
   List<Map<dynamic, dynamic>> listaUsuarios = [];
+  List<dynamic> dadosParaSincronizar = [];
   var data = [];
+
+  late Box partilhaBox;
+
+  //Dados ocorrencias
+  //final Box _occurrenceBox = Hive.box('partilha');
+
+  //final Box _occurrenceBox = Hive.box('partilha');
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  // inicializarReplicacao();
 
   @override
   void initState() {
     super.initState();
+
+    _initializeHive();
     fetchData();
+    //iniailiazarDados();
     // Atribui o valor de userId à variável global _userIdLogado
     userI = widget.userI;
     ocorrencia = widget.ocorrencia;
     ocorrenciaId = widget.ocorrencia["id"];
+    //inicializarReplicacao();
+
+    //_checkConnectivityAndSync();
+
+    /* _checkConnectivityAndSave();
+    // Monitora mudanças na conectividade
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen((results) {
+      if (results.isNotEmpty && results.first != ConnectivityResult.none) {
+        _connectado = true;
+        _syncData(); // Sincroniza quando a conexão é restabelecida
+      }
+    });*/
   }
 
-  Future<void> _cadastrar() async {
-    final descricao = nomeController.text;
-    final senha = senhaController.text;
+  Future<void> _initializeHive() async {
+    final appDocumentDir = await getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDir.path);
 
-    bool resposta = await Partilhar();
+    // Abre a caixa (Box)
+    partilhaBox = await Hive.openBox('partilha');
 
-    // Exibe a mensagem no SnackBar
+    // Agora você pode usar a caixa `partilhaBox` para armazenar ou recuperar dados
+  }
 
-    if (resposta == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Ocorrencia Partilhada com sucesso!")),
-      );
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel(); // Cancela o listener ao sair
+    super.dispose();
+  }
 
-      nomeController.clear();
-      senhaController.clear();
+  Future<void> _checkConnectivityAndSync() async {
+    var connectivityResult = await _connectivity.checkConnectivity();
+    if (connectivityResult.isNotEmpty &&
+        connectivityResult.first != ConnectivityResult.none) {
+      _syncData();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Ocorrencia Não Partilhada!")),
-      );
+      print("Não conectado...");
+
+      /*  Map<String, dynamic> body = {
+        "id": encryptarDado("00000000-0000-0000-0000-000000000000"),
+        "utilizadorId": encryptarDado(_selectedUser),
+        "ocorrenciaId": encryptarDado(ocorrenciaId)
+      };*/
+
+      //_occurrenceBox.add(jsonEncode(body));
     }
   }
+
+  Future<void> _checkConnectivityAndSave() async {
+    var connectivityResult = await _connectivity.checkConnectivity();
+    if (connectivityResult.isNotEmpty &&
+        connectivityResult.first != ConnectivityResult.none) {
+      //_cadastrar(true);
+    } else {
+      _cadastrar(false);
+      print("Não conectado...");
+
+      /*  Map<String, dynamic> body = {
+        "id": encryptarDado("00000000-0000-0000-0000-000000000000"),
+        "utilizadorId": encryptarDado(_selectedUser),
+        "ocorrenciaId": encryptarDado(ocorrenciaId)
+      };*/
+
+      //_occurrenceBox.add(jsonEncode(body));
+    }
+  }
+
+  iniailiazarDados() async {
+    final appDocumentDir = await getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDir.path);
+
+    // Abra a caixa (Box)
+    await Hive.openBox('partilha');
+  }
+
+  Future<void> _syncData() async {
+    // Simulação de sincronização
+    await Future.delayed(Duration(seconds: 2)); // Simula um atraso de rede
+    print('Dados sincronizados com sucesso!');
+
+    Enviado();
+  }
+
+  void Enviado() async {
+    for (int i = 0; i < partilhaBox.length; i++) {
+      String jsonString = partilhaBox.getAt(i);
+
+      Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+      var url = Uri.parse(baseUrl + "Ocorencia/partilha");
+
+      Map<String, String> headers = {"Content-Type": "application/json"};
+
+      try {
+        final response = await http.post(
+          url,
+          headers: headers,
+          body: jsonEncode(jsonMap),
+        );
+
+        if (response.statusCode == 200) {
+          //return true;
+        } else {
+          //return false;
+        }
+      } catch (e) {
+        //return false;
+      }
+
+      partilhaBox.delete(i);
+    }
+  }
+
+  Future<void> _cadastrar(bool connectado) async {
+    if (connectado) {
+      final descricao = nomeController.text;
+      final senha = senhaController.text;
+
+      bool resposta = await Partilhar();
+
+      // Exibe a mensagem no SnackBar
+
+      if (resposta == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Ocorrencia Partilhada com sucesso!")),
+        );
+
+        nomeController.clear();
+        senhaController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Ocorrencia Não Partilhada!")),
+        );
+      }
+    } else {
+      print("Add offilne");
+
+      Map<String, dynamic> body = {
+        "id": encryptarDado("00000000-0000-0000-0000-000000000000"),
+        "utilizadorId": encryptarDado(_selectedUser),
+        "ocorrenciaId": encryptarDado(ocorrenciaId)
+      };
+
+      partilhaBox.add(jsonEncode(body));
+    }
+  }
+
+  /* inicializarReplicacao() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // Inicialize o Hive com um caminho de armazenamento
+    final appDocumentDir = await getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDir.path);
+
+    // Abra a caixa (Box)
+    await Hive.openBox('occurrences');
+  }*/
 
   Future<void> fetchData() async {
     final url = Uri.parse(baseUrl +
@@ -196,7 +358,7 @@ class _DetalhesOcorrenciaState extends State<DetalhesOcorrencia> {
                     onPressed: () {
                       // Ação do botão Aceder
                       // Navigator.pushNamed(context, "/telaPrincipal");
-                      _cadastrar();
+                      _cadastrar(true);
                     },
                     child: Text('Partilhar'),
                     style: ElevatedButton.styleFrom(
@@ -221,11 +383,6 @@ Future<bool> Partilhar() async {
   var url = Uri.parse(baseUrl + "Ocorencia/partilha");
 
   Map<String, String> headers = {"Content-Type": "application/json"};
-  /*Map<String, dynamic> body = {
-    "id": "00000000-0000-0000-0000-000000000000",
-    "utilizadorId": userI,
-    "ocorrenciaId": ocorrenciaId
-  };*/
 
   Map<String, dynamic> body = {
     "id": encryptarDado("00000000-0000-0000-0000-000000000000"),
@@ -261,4 +418,32 @@ String encryptarDado(plainText) {
   final encrypted = encrypter.encrypt(plainText, iv: iv);
 
   return base64.encode(encrypted.bytes);
+}
+
+Future<bool> PartilharSyncronizacao() async {
+  var url = Uri.parse(baseUrl + "Ocorencia/partilha");
+
+  Map<String, String> headers = {"Content-Type": "application/json"};
+
+  Map<String, dynamic> body = {
+    "id": encryptarDado("00000000-0000-0000-0000-000000000000"),
+    "utilizadorId": encryptarDado(_selectedUser),
+    "ocorrenciaId": encryptarDado(ocorrenciaId)
+  };
+
+  try {
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
 }

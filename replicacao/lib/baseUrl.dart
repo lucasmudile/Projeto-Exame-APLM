@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
 
-String baseUrl = "https://bm4vzmb7-44334.uks1.devtunnels.ms/api/";
+String baseUrl = "https://bm4vzmb7-7259.uks1.devtunnels.ms/api/";
 
-String baseUrlImage = "https://bm4vzmb7-44334.uks1.devtunnels.ms/Uploads/";
+String baseUrlImage = "https://bm4vzmb7-7259.uks1.devtunnels.ms/Uploads/";
 
 void main() {
   //Mecanismo de implementação
